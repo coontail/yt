@@ -62,9 +62,14 @@ module Yt
 
       # @private
       def update(attributes = {})
+        params = {}
+        if attributes[:on_behalf_of_content_owner]
+          params[:onBehalfOfContentOwner] = attributes.delete(:on_behalf_of_content_owner)
+        end
+
         underscore_keys! attributes
         body = build_update_body attributes
-        params = {part: body.keys.join(',')}
+        params = params.merge({part: body.keys.join(',')})
         do_update params: params, body: body.merge(id: @id) do |data|
           @id = data['id']
           @snippet = Snippet.new data: data['snippet'] if data['snippet']
