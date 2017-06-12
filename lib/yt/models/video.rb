@@ -639,7 +639,11 @@ module Yt
       # Tells `has_many :resumable_sessions` what params are set for the object
       # associated to the uploaded file.
       def upload_params
-        {video_id: id}
+        if auth.owner_name.present?
+          { video_id: id, on_behalf_of_content_owner: auth.owner_name }
+        else
+          { video_id: id }
+        end
       end
 
       # @private
