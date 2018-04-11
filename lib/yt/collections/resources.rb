@@ -10,9 +10,10 @@ module Yt
       end
 
       def insert(attributes = {}, options = {}) #
+        other_params = attributes.delete(:params)
         underscore_keys! attributes
         body = build_insert_body attributes
-        params = {part: body.keys.join(',')}
+        params = {part: body.keys.join(',')}.merge(other_params)
         do_insert(params: params, body: body)
       end
 
