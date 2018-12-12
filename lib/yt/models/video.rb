@@ -660,7 +660,7 @@ module Yt
       # @see https://developers.google.com/youtube/v3/docs/videos/update
       # @todo: Add recording details keys
       def update_parts
-        snippet_keys = [:title, :description, :tags, :category_id]
+        snippet_keys = [:title, :description, :tags, :category_id, :default_language, :default_audio_language]
         snippet = {keys: snippet_keys, sanitize_brackets: true}
         status_keys = [:privacy_status, :embeddable, :license,
           :public_stats_viewable, :publish_at]
