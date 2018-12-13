@@ -225,7 +225,7 @@ module Yt
       # associated to the uploaded file.
       def upload_body(params = {})
         {}.tap do |body|
-          snippet = params.slice :title, :description, :tags, :category_id
+          snippet = params.slice :title, :description, :tags, :category_id, :default_audio_language, :default_language
           snippet[:categoryId] = snippet.delete(:category_id) if snippet[:category_id]
           body[:snippet] = snippet if snippet.any?
 
