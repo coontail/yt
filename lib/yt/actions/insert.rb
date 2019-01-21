@@ -30,7 +30,9 @@ module Yt
           params[:method] = :post
           params[:auth] = @auth
           params[:expected_response] = Net::HTTPOK
-          params[:api_key] = Yt.configuration.api_key if Yt.configuration.api_key
+
+          api_key = @credentials.try(:[], :api_key) || Yt.configuration.api_key
+          params[:api_key] = api_key if api_key
         end
       end
 

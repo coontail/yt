@@ -32,6 +32,7 @@ module Yt
         @force = options[:force]
         @scopes = options[:scopes]
         @authentication = options[:authentication]
+        @credentials = options[:credentials]
       end
 
       def auth
@@ -235,11 +236,11 @@ module Yt
       end
 
       def client_id
-        Yt.configuration.client_id
+        @credentials.try(:[], :client_id) || Yt.configuration.client_id
       end
 
       def client_secret
-        Yt.configuration.client_secret
+        @credentials.try(:[], :client_secret) ||Yt.configuration.client_secret
       end
     end
   end
