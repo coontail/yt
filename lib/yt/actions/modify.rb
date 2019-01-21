@@ -29,7 +29,9 @@ module Yt
           params[:auth] = @auth
           params[:host] = 'www.googleapis.com'
           params[:expected_response] = Net::HTTPNoContent
-          params[:api_key] = Yt.configuration.api_key if Yt.configuration.api_key
+          
+          api_key = @credentials.try(:[], :api_key) || Yt.configuration.api_key
+          params[:api_key] = api_key if api_key
         end
       end
     end
