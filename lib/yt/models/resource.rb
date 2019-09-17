@@ -100,7 +100,14 @@ module Yt
       # @return [Hash] the parameters to submit to YouTube to delete a playlist.
       # @see https://developers.google.com/youtube/v3/docs/playlists/delete
       def delete_params
-        super.tap{|params| params[:params] = {id: @id}}
+        auth_params =
+          if auth.owner_name.present?
+            { on_behalf_of_content_owner: auth.owner_name }
+          else
+            {}
+          end
+
+        super.tap{|params| params[:params] = {id: @id}.merge(auth_params)}
       end
 
       def build_update_body(attributes = {})
