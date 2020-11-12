@@ -39,7 +39,7 @@ module Yt
 
       delegate :default_language, to: :snippet
       delegate :default_audio_language, to: :snippet
-      
+
       # @return [<String>] the URL of the channel that the video belongs to.
       def channel_url
         "https://www.youtube.com/channel/#{channel_id}"
@@ -269,6 +269,10 @@ module Yt
 
       has_one :file_detail
 
+      # @!attribute [r] file_name
+      #   @return [String] the name of the uploaded file.
+      delegate :file_name, to: :file_detail
+
       # @!attribute [r] file_size
       #   @return [Integer] the size of the uploaded file (in bytes).
       delegate :file_size, to: :file_detail
@@ -391,7 +395,7 @@ module Yt
 
       has_many :resumable_sessions
 
-      # @!attribute [r] channel
+      # @!attribute [r] claim
       #   @return [Yt::Models::Claim, nil] the first claim on the video by
       #     the content owner of the video, if eagerly loaded.
       def claim
@@ -620,7 +624,8 @@ module Yt
       # @private
       # Tells `has_reports` to retrieve the reports from YouTube Analytics API
       # either as a Channel or as a Content Owner.
-      # @see https://developers.google.com/youtube/analytics/v1/reports
+      # @see https://developers.google.com/youtube/analytics/channel_reports
+      # @see https://developers.google.com/youtube/analytics/content_owner_reports
       def reports_params
         {}.tap do |params|
           if auth.owner_name
@@ -641,12 +646,16 @@ module Yt
       # @private
       # Tells `has_many :resumable_sessions` what params are set for the object
       # associated to the uploaded file.
+      # https://developers.google.com/youtube/v3/docs/thumbnails/set
       def upload_params
-        if auth.owner_name.present?
+        params = if auth.owner_name.present?
           { video_id: id, on_behalf_of_content_owner: auth.owner_name }
         else
           { video_id: id }
         end
+
+        params.merge! auth.upload_thumbnail_params
+        params
       end
 
       # @private
@@ -668,6 +677,15 @@ module Yt
         status_keys = [:privacy_status, :embeddable, :license,
           :public_stats_viewable, :publish_at]
         {snippet: snippet, status: {keys: status_keys}}
+      end
+
+      # For updating video with content owner auth.
+      # @see https://developers.google.com/youtube/v3/docs/videos/update
+      def update_params
+        params = super
+        params[:params] ||= {}
+        params[:params].merge! auth.update_video_params
+        params
       end
 
       # NOTE: Another irrational behavior of YouTube API. If you are setting a
